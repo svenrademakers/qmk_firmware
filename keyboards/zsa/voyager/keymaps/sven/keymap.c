@@ -55,3 +55,20 @@ bool is_flow_tap_key(uint16_t keycode) {
     return false;
 }
 
+uint16_t get_flow_tap_term(uint16_t keycode, keyrecord_t *record, uint16_t prev_keycode) {
+    uint16_t tap_kc      = get_tap_keycode(keycode);
+    uint16_t prev_tap_kc = get_tap_keycode(prev_keycode);
+
+    // If we're pressing the Shift-/ mod-tap after T,
+    // completely disable Flow Tap so the key can still be held.
+    if (tap_kc == KC_SLSH && prev_tap_kc == KC_T) {
+        return 0;  // No Flow Tap => normal tap/hold behavior
+    }
+
+    // Default behavior from the docs:
+    if (is_flow_tap_key(keycode) && is_flow_tap_key(prev_keycode)) {
+        return FLOW_TAP_TERM;
+    }
+    return 0;
+}
+
